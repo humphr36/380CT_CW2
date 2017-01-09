@@ -35,26 +35,40 @@ class SSP():
         """Method searches through all the possible candidates in order
         it checks to see if they equal the target and if they do it prints
         true"""
-        candidates=[]
-        candidate=[]
-        #Create an array of all possible subsets
-        for j in range(0, self.n+1):
-          for subset in combinations(self.S, j):
-            candidates.append(subset)
-        #Search through the possible subsets to find if one matches the target
-        summedcandidates=[sum(tup) for tup in candidates]
-        for k in summedcandidates:
-            if k==self.t:
-                return True
-        return False
+        if self.n==0 and self.t!=0: #if the set is empty and the target is not 0, return false
+            return False
+        if self.t==0: #if the target is 0 return true (as an empty set is a subset of all sets and adds up to 0)
+            return True
+        else:
+            #Search through the possible subsets to find if one matches the target
+            for j in range(0, self.n+1):
+              for subset in combinations(self.S, j):
+                  if sum(subset)==self.t:
+                      return True
+            return False
 
     #Dynamic Programming
+    def dynamic_programming(self):
+        """Method"""
+        if self.n==0 and self.t!=0: #if the set is empty and the target is not 0, return false
+            return False
+        if self.t==0: #if the target is 0 return true (as an empty set is a subset of all sets and adds up to 0)
+            return True
+        else:
+            #Create an array storing whether the each integer between 0 and t can calculated from the set
+            options=[False]*(self.t+1)
+            options[0]=True
+            for k in range(0,self.n): #For each element of the set
+                changingvars=[]
+                for l in range(0,self.t+1): #for every integer between 0 and the total
+                    z=l-self.S[k]
+                    if options[l]==False and z>=0 and options[z]==True: #if the integer is false and if the number - the element is true
+                        changingvars.append(l)
+                for var in changingvars:
+                    options[var]=True
+                changingvars=[]
+            return options[self.t]
 
-    #Greedy
-
-    #Grasp
-
-    
     #Random Search
     def try_at_random(self):
         """Method creates an empty array as the candidate variable,
@@ -68,11 +82,13 @@ class SSP():
             candidate = sample(self.S, randint(0,self.n))
             total     = sum(candidate)
             print( "Trying: ", candidate, ", sum:", total )
-            
-start_time = time() #Starts monitoring time
 instance = SSP()
-instance.random_yes_instance(20)
-print (instance.exhaustive_search())
-print( instance )
-#instance.try_at_random()
-print("--- %s seconds ---" % (time() - start_time)) #Prints execution time
+for e in range(0,1):
+    instance.random_instance(50,14)
+    print( instance )
+    start_time = time() #Starts monitoring time
+    #print (instance.exhaustive_search())
+    print (instance.dynamic_programming())
+    #instance.dynamic_programming()
+    #instance.try_at_random()
+    print("--- %s seconds ---" % (time() - start_time)) #Prints execution time
